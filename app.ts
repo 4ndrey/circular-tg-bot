@@ -1,20 +1,44 @@
 import { Bot, webhookCallback } from "grammy";
 import express from "express";
+import fetch from "node-fetch";
 
 // Create a bot using the Telegram token
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
-// Handle the /yo command to greet the user
-bot.command("yo", ctx => ctx.reply(`Yo ${ctx.from?.username}`));
+// Handle the /pair command to pair a watch
+bot.command("pair", async ctx => { 
+  const userId = ctx.from?.id
+  const response = await fetch(`https://circular-api.cyclic.app/watch/pair`, 
+    { method: 'post', headers: {'id': ctx.message!.text, 'userId': ctx.from!.id.toString()} }
+  );
+  if (response.status == 200) {
+    ctx.reply('Paired!') 
+  } else {
+    ctx.reply('Failed :(') 
+  }
+});
 
-// // Suggest commands in the menu
-// bot.api.setMyCommands([
-//   { command: "yo", description: "Be greeted by the bot" },
-//   {
-//     command: "effect",
-//     description: "Apply text effects on the text. (usage: /effect [text])",
-//   },
-// ]);
+// Handle the /note command for the watch
+bot.command("note", async ctx => { 
+  const userId = ctx.from?.id
+  const response = await fetch(`https://circular-api.cyclic.app/watch/note`, 
+    { method: 'post', headers: {'note': ctx.message!.text, 'userId': ctx.from!.id.toString()} }
+  );
+  if (response.status == 200) {
+    ctx.reply('ok') 
+  } else {
+    ctx.reply('Failed :(') 
+  }
+});
+
+// Suggest commands in the menu
+bot.api.setMyCommands([
+  { command: "note", description: "Update a note" },
+  {
+    command: "pair",
+    description: "Pair your Garmin watch",
+  },
+]);
 
 // // Handle all other messages and the /start command
 // const introductionMessage = `Hello! I'm a Telegram bot.
