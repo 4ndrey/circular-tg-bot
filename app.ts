@@ -7,28 +7,28 @@ const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 // Handle the /yo command to greet the user
 bot.command("yo", ctx => ctx.reply(`Yo ${ctx.from?.username}`));
 
-// Suggest commands in the menu
-bot.api.setMyCommands([
-  { command: "yo", description: "Be greeted by the bot" },
-  {
-    command: "effect",
-    description: "Apply text effects on the text. (usage: /effect [text])",
-  },
-]);
+// // Suggest commands in the menu
+// bot.api.setMyCommands([
+//   { command: "yo", description: "Be greeted by the bot" },
+//   {
+//     command: "effect",
+//     description: "Apply text effects on the text. (usage: /effect [text])",
+//   },
+// ]);
 
-// Handle all other messages and the /start command
-const introductionMessage = `Hello! I'm a Telegram bot.
-I'm powered by Cyclic, the next-generation serverless computing platform.
+// // Handle all other messages and the /start command
+// const introductionMessage = `Hello! I'm a Telegram bot.
+// I'm powered by Cyclic, the next-generation serverless computing platform.
 
-<b>Commands</b>
-/yo - Be greeted by me
-/effect [text] - Show a keyboard to apply text effects to [text]`;
+// <b>Commands</b>
+// /yo - Be greeted by me
+// /effect [text] - Show a keyboard to apply text effects to [text]`;
 
-const replyWithIntro = (ctx: any) =>
-  ctx.reply(introductionMessage);
+// const replyWithIntro = (ctx: any) =>
+//   ctx.reply(introductionMessage);
 
-bot.command("start", replyWithIntro);
-bot.on("message", replyWithIntro);
+// bot.command("start", replyWithIntro);
+// bot.on("message", replyWithIntro);
 
 // Start the server
 if (process.env.ENV === "production") {
