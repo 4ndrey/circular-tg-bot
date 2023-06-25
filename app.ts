@@ -1,5 +1,4 @@
-import { Bot, InlineKeyboard, webhookCallback } from "grammy";
-import { chunk } from "lodash";
+import { Bot, webhookCallback } from "grammy";
 import express from "express";
 
 // Create a bot using the Telegram token
