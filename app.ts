@@ -1,59 +1,48 @@
+import { Bot, InlineKeyboard, webhookCallback } from "grammy";
+import { chunk } from "lodash";
 import express from "express";
-const app = express();
-const port = process.env.PORT || 3001;
 
-app.get("/", (req, res) => res.type('html').send(html));
+// Create a bot using the Telegram token
+const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+// Handle the /yo command to greet the user
+bot.command("yo", (ctx) => ctx.reply(`Yo ${ctx.from?.username}`));
 
+// Suggest commands in the menu
+bot.api.setMyCommands([
+  { command: "yo", description: "Be greeted by the bot" },
+  {
+    command: "effect",
+    description: "Apply text effects on the text. (usage: /effect [text])",
+  },
+]);
 
-const html = `
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Hello from Render!</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script>
-      setTimeout(() => {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          disableForReducedMotion: true
-        });
-      }, 500);
-    </script>
-    <style>
-      @import url("https://p.typekit.net/p.css?s=1&k=vnd5zic&ht=tk&f=39475.39476.39477.39478.39479.39480.39481.39482&a=18673890&app=typekit&e=css");
-      @font-face {
-        font-family: "neo-sans";
-        src: url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("woff2"), url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("woff"), url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("opentype");
-        font-style: normal;
-        font-weight: 700;
-      }
-      html {
-        font-family: neo-sans;
-        font-weight: 700;
-        font-size: calc(62rem / 16);
-      }
-      body {
-        background: white;
-      }
-      section {
-        border-radius: 1em;
-        padding: 1em;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-right: -50%;
-        transform: translate(-50%, -50%);
-      }
-    </style>
-  </head>
-  <body>
-    <section>
-      Hello from Render!
-    </section>
-  </body>
-</html>
-`
+// Handle all other messages and the /start command
+const introductionMessage = `Hello! I'm a Telegram bot.
+I'm powered by Cyclic, the next-generation serverless computing platform.
+
+<b>Commands</b>
+/yo - Be greeted by me
+/effect [text] - Show a keyboard to apply text effects to [text]`;
+
+const replyWithIntro = (ctx: any) =>
+  ctx.reply(introductionMessage);
+
+bot.command("start", replyWithIntro);
+bot.on("message", replyWithIntro);
+
+// Start the server
+if (process.env.NODE_ENV === "production") {
+  // Use Webhooks for the production server
+  const app = express();
+  app.use(express.json());
+  app.use(webhookCallback(bot, "express"));
+
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Bot listening on port ${PORT}`);
+  });
+} else {
+  // Use Long Polling for development
+  bot.start();
+}
