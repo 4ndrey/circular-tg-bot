@@ -5,7 +5,7 @@ import express from "express";
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
 // Handle the /yo command to greet the user
-bot.command("yo", (ctx) => ctx.reply(`Yo ${ctx.from?.username}`));
+bot.command("yo", ctx => ctx.reply(`Yo ${ctx.from?.username}`));
 
 // Suggest commands in the menu
 bot.api.setMyCommands([
@@ -31,7 +31,7 @@ bot.command("start", replyWithIntro);
 bot.on("message", replyWithIntro);
 
 // Start the server
-if (process.env.NODE_ENV === "production") {
+if (process.env.ENV === "production") {
   // Use Webhooks for the production server
   const app = express();
   app.use(express.json());
