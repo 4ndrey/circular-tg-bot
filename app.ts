@@ -9,7 +9,7 @@ const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 bot.command("pair", async ctx => { 
   const userId = ctx.from?.id
   const response = await fetch(`https://circular-api.cyclic.app/watch/pair`, 
-    { method: 'post', headers: {'id': ctx.message!.text, 'userId': ctx.from!.id.toString()} }
+    { method: 'post', headers: {'id': ctx.message!.text.split(' ')[1], 'userId': ctx.from!.id.toString()} }
   );
   if (response.status == 200) {
     ctx.reply('Paired!') 
@@ -22,7 +22,7 @@ bot.command("pair", async ctx => {
 bot.command("note", async ctx => { 
   const userId = ctx.from?.id
   const response = await fetch(`https://circular-api.cyclic.app/watch/note`, 
-    { method: 'post', headers: {'note': ctx.message!.text, 'userId': ctx.from!.id.toString()} }
+    { method: 'post', headers: {'note': ctx.message!.text.split(' ')[1], 'userId': ctx.from!.id.toString()} }
   );
   if (response.status == 200) {
     ctx.reply('ok') 
